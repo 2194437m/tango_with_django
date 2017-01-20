@@ -45,6 +45,7 @@ class AboutPageTests(TestCase):
         # Check if in the about page is there - and contains the specified message
         # Exercise from Chapter 4
         response = self.client.get(reverse('about'))
+        print(response)
         self.assertIn(b'This tutorial has been put together by', response.content)
         
         
@@ -248,3 +249,7 @@ class Chapter7ViewTests(TestCase):
 
 
     # test if the add_page.html template exists.
+
+
+
+    
