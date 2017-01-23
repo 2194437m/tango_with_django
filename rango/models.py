@@ -26,18 +26,8 @@ class Category(models.Model):
 class Page(models.Model):
 	category = models.ForeignKey(Category)
 	title = models.CharField(max_length = 128)
-	url = models.URLField()
+	url = models.URLField(max_length = 200)
 	views = models.IntegerField(default = 0)
-
-	def clean(self):
-		cleaned_data = self.cleaned_data
-		url = cleaned_data.get('url')
-
-		if url and not url.startswith('http://'):
-			url = 'http://' + url
-			cleaned_data['url'] = url
-
-			return cleaned_data
 
 	def __str__(self):
 		return self.title

@@ -1,20 +1,25 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from rango.models import Category, Page
-from rango.forms import CategoryForm
+from rango.forms import CategoryForm, PageForm
 
-# Create your views here.
+# views.py is called from urls.py. Individual url mappings
+# are mapping to specific functions, which display
+# and render templates accordingly.
 
+# View for the index / or /rango page.
 def index(request):
 	category_list = Category.objects.order_by('-likes')[:5]
 	pages_list = Page.objects.order_by('-views')[:5]
 	context_dict = {'categories': category_list, 'pages': pages_list}
 	return render(request, 'rango/index.html', context=context_dict)
 
+# View for the /about page.
 def about(request):
 	context_dict = {}
 	return render(request, 'rango/about.html', context=context_dict)
 
+# View for showing the category pages
 def show_category(request, category_name_slug):
 	context_dict = {}
 
@@ -29,6 +34,7 @@ def show_category(request, category_name_slug):
 
 	return render(request, 'rango/category.html', context_dict)
 
+# View for adding a category
 def add_category(request):
 	form = CategoryForm()
 
@@ -43,3 +49,27 @@ def add_category(request):
 
 	return render(request, 'rango/add_category.html', {'form': form})
 
+# View for adding a page
+def add_page(request, category_name_slug):
+	try:
+		category = Category.objects.get(slug=category_name_slug)
+	except Category.DoesNotExist:
+		category = None
+
+	form = PageForm()
+
+	if request.method == 'POST':
+		form = PageForm(request.POST)
+
+		if form.is_valid():
+			if category:
+				page = form.save(commit = False)
+				page.category = category
+				page.views = 0
+				page.save()
+				return show_category(request, category_name_slug)
+		else:
+			print(form.errors)
+
+	context_dict = {'form': form, 'category': category}
+	return render(request, 'rango/add_page.html', context_dict)
