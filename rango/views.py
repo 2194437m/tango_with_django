@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm
+from django.core.urlresolvers import reverse
 
 # views.py is called from urls.py. Individual url mappings
 # are mapping to specific functions, which display
@@ -12,12 +13,12 @@ def index(request):
 	category_list = Category.objects.order_by('-likes')[:5]
 	pages_list = Page.objects.order_by('-views')[:5]
 	context_dict = {'categories': category_list, 'pages': pages_list}
+	sdff = reverse('index')
 	return render(request, 'rango/index.html', context=context_dict)
 
 # View for the /about page.
 def about(request):
-	context_dict = {}
-	return render(request, 'rango/about.html', context=context_dict)
+	return render(request, 'rango/about.html', {})
 
 # View for showing the category pages
 def show_category(request, category_name_slug):
