@@ -3,7 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 
 # views.py is called from urls.py. Individual url mappings
@@ -118,12 +119,21 @@ def user_login(request):
 		if user:
 			if user.is_active:
 				login(request, user)
-				return HttpResponseRedirect(reverse('rango:index'))
+				return HttpResponseRedirect(reverse('index'))
 			else:
 				return HttpResponse('Your Rango account is disabled.')
 		else:
 			print ("Invalid login details: {0}, {1}".format(username, password))
-			return HttpResponse("Invalid login details supplied.")
+			return HttpResponse("<a href = '/rango/'>Invalid login details supplied.</a>")
 
 	else:
 		return render(request, 'rango/login.html', {})
+
+@login_required
+def restricted(request):
+	return HttpResponse("Since you're logged in, you can see this text!")
+
+@login_required
+def user_logout(request):
+	logout(request)
+	return HttpResponse(reverse('index'))
