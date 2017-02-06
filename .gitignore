@@ -2,3 +2,5 @@
 *.idea/
 *.pyc
 test*
+report_errors*
+results*
