@@ -17,7 +17,6 @@ def index(request):
 	request.session.set_test_cookie()
 	category_list = Category.objects.order_by('-likes')[:5]
 	pages_list = Page.objects.order_by('-views')[:5]
-	visitor_cookie_handler(request)
 
 	context_dict = {'categories': category_list, 'pages': pages_list}
 	context_dict['visits'] = request.session['visits']
@@ -169,7 +168,7 @@ def visitor_cookie_handler(request):
 	last_visit_time = datetime.strptime(last_visit_cookie[:-7],'%Y-%m-%d %H:%M:%S')
 	if (datetime.now() - last_visit_time).days > 0:
 		visits = visits + 1
-		response.set_cookie('last_visit', str(datetime.now()))
+		request.session['last_visit'] = str(datetime.now())
 	else:
 		visits = 1
 		request.session['last_visit'] = last_visit_cookie
